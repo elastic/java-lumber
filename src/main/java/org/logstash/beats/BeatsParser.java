@@ -69,6 +69,7 @@ public class BeatsParser extends ByteToMessageDecoder {
                     logger.debug("Frame version 1 detected");
                     payload.setProtocol(Protocol.VERSION_1);
                 }
+
                 transition(States.READ_FRAME_TYPE, 1);
                 break;
             }
@@ -125,7 +126,7 @@ public class BeatsParser extends ByteToMessageDecoder {
 
 
                 byte[] bytes = new byte[(int) this.requiredBytes];
-                in.getBytes(internalBuffer().readerIndex(), bytes);
+                in.readBytes(bytes);
 
                 InputStream inflater = new InflaterInputStream(new ByteArrayInputStream(bytes));
                 ByteArrayOutputStream decompressed = new ByteArrayOutputStream();
@@ -145,8 +146,6 @@ public class BeatsParser extends ByteToMessageDecoder {
                 while(newInput.readableBytes() > 0) {
                     decode(ctx, newInput, out);
                 }
-
-                in.skipBytes(in.readableBytes());
 
                 break;
             }

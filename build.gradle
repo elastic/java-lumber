@@ -22,6 +22,10 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.3'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
     compile 'com.fasterxml.jackson.module:jackson-module-afterburner:2.7.4'
-//    compile name: 'logstash-core-event-java'
-// compile group: 'org.jruby', name: 'jruby-core', version: '1.7.25'
+}
+
+task copyJarToLogstashInputBeats {
+    copy {
+        from: 'build/libs/'
+    }
 }

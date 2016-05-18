@@ -9,6 +9,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.apache.log4j.Logger;
 
 public class Server {
@@ -64,7 +65,7 @@ public class Server {
             ChannelPipeline pipeline = socket.pipeline();
 
             pipeline.addLast("logger", this.loggingHandler);
-            pipeline.addLast("frame-splitter", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 8, 4, 0, 0));
+            pipeline.addLast("keep-alive-handler", new IdleStateHandler(60*15, 5, 0));
             pipeline.addLast("beats-parser", new BeatsParser());
             pipeline.addLast("beats-handler", this.beatsHandler);
         }
