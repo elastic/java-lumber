@@ -24,8 +24,27 @@ dependencies {
     compile 'com.fasterxml.jackson.module:jackson-module-afterburner:2.7.4'
 }
 
-task copyJarToLogstashInputBeats {
+
+task fatJar(type: Jar) {
+    archiveName = "beats-all.jar"
+
+    manifest {
+        attributes 'Implementation-Title': 'beats',
+                'Implementation-Version': version,
+                'Main-Class': 'org.logstash.beats.Server'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+task copyJarToLogstashInputBeats(type: Copy, dependsOn:[fatJar]) {
     copy {
-        from: 'build/libs/'
+        from "${buildDir}/libs/beats-all.jar"
+        into '/Users/ph/es/logstash-plugins/logstash-input-beats/vendor/jar-dependencies/runtime-jars/'
+
     }
 }
+
+
+task build (dependsOn: [clean, fatJar, copyJarToLogstashInputBeats])

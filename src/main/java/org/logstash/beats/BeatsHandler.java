@@ -11,10 +11,10 @@ import org.apache.log4j.Logger;
 @ChannelHandler.Sharable
 public class BeatsHandler extends ChannelInboundHandlerAdapter {
     private static Logger logger = Logger.getLogger(Server.class.getName());
-    private final MessageListener messageListener;
+    private final IMessageListener messageListener;
     private ChannelHandlerContext ctx;
 
-    public BeatsHandler(MessageListener messageListener) {
+    public BeatsHandler(IMessageListener messageListener) {
         this.messageListener = messageListener;
     }
 

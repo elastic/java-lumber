@@ -18,7 +18,7 @@ public class Server {
     private NioEventLoopGroup bossGroup;
     private NioEventLoopGroup workGroup;
 
-    private MessageListener messageListener = new MessageListener();
+    private IMessageListener messageListener = new MessageListener();
 
     static Logger logger = Logger.getLogger(Server.class.getName());
 
@@ -49,7 +49,7 @@ public class Server {
         return this;
     }
 
-    public void setMessageListener(MessageListener messageListener) {
+    public void setMessageListener(IMessageListener messageListener) {
         this.messageListener = messageListener;
     }
 
@@ -57,7 +57,7 @@ public class Server {
         private final BeatsHandler beatsHandler;
         private final LoggingHandler loggingHandler = new LoggingHandler();
 
-        public BeatsInitializer(MessageListener messageListener) {
+        public BeatsInitializer(IMessageListener messageListener) {
             this.beatsHandler = new BeatsHandler(messageListener);
         }
 
