@@ -21,8 +21,10 @@ public class BeatsParser extends ByteToMessageDecoder {
     private static final int CHUNK_SIZE = 1024;
 
     private final static Logger logger = Logger.getLogger(Server.class.getName());
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final static ObjectMapper mapper = new ObjectMapper();
+
     private final Inflater decompresser = new Inflater();
+    private Batch batch = new Batch();
 
     private enum States {
         READ_HEADER,
@@ -96,12 +98,19 @@ public class BeatsParser extends ByteToMessageDecoder {
             }
             case READ_WINDOW_SIZE: {
                 logger.debug("Running: READ_WINDOW_SIZE");
-
                 long windowSize = in.readUnsignedInt();
-                logger.debug("Window size:" + windowSize);
                 payload.setWindowSize(windowSize);
 
-                resetSequence();
+                // This is unlikely to happen but I have no
+                // way to known when a frame is actually completely done other than checking
+                // the windows and the sequence number, If the FSM read a new window and I have still
+                // events buffered I should send them down to the next handler.
+                if(!batch.isEmpty()) {
+                    logger.warn("New window size received but the current batch was complete, sending the current batch");
+                    out.add(this.batch);
+                }
+
+                this.resetBatch();
                 transitionToReadHeader();
                 break;
             }
@@ -157,8 +166,12 @@ public class BeatsParser extends ByteToMessageDecoder {
 
                 Message message = new Message(payload, sequence, (Map) mapper.readValue(line, Object.class));
 
-                out.add(message);
+                batch.addMessage(message);
 
+                if(batch.size() == this.payload.getWindowSize()) {
+                    out.add(batch);
+                    this.resetBatch();
+                }
 
                 transitionToReadHeader();
                 break;
@@ -190,7 +203,8 @@ public class BeatsParser extends ByteToMessageDecoder {
         transitionToReadHeader();
     }
 
-    public void resetSequence() {
+    public void resetBatch() {
         this.sequence = 0;
+        this.batch = new Batch();
     }
 }

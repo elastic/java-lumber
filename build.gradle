@@ -1,8 +1,12 @@
+import com.sun.tools.internal.jxc.SchemaGenerator
+
 group 'org.logstash'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin:'application'
+mainClassName = "org.logstash.beats.Runner"
 
 sourceCompatibility = 1.8
 
@@ -45,6 +49,5 @@ task copyJarToLogstashInputBeats(type: Copy, dependsOn:[fatJar]) {
 
     }
 }
-
 
 task build (dependsOn: [clean, fatJar, copyJarToLogstashInputBeats])

@@ -2,10 +2,7 @@ package org.logstash.beats;
 
 import java.util.Map;
 
-/**
- * Created by ph on 2016-05-16.
- */
-public class Message {
+public class Message implements Comparable<Message> {
     private int sequence;
     private String identityStream;
     private Map data;
@@ -47,5 +44,10 @@ public class Message {
 
     public void setPayload(Payload payload) {
         this.payload = payload;
+    }
+
+    @Override
+    public int compareTo(Message o) {
+        return Integer.compare(this.getSequence(), o.getSequence());
     }
 }

@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.apache.log4j.Logger;
@@ -24,16 +25,23 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    public void channelRead(ChannelHandlerContext ctx, Object data) {
+
+
         logger.debug("Received a new payload");
+        Batch batch = (Batch) data;
+        AckingStrategy acking = AckingStrategy.get(Protocol.VERSION_2);
 
-        Message message = (Message) msg;
-        this.messageListener.onNewMessage(message);
 
-        if(requireAck(message)) {
-            this.ack(message);
-        } else {
-            logger.debug("No ACK: " + message.getSequence() + " window size: " + message.getPayload().getWindowSize() );
+
+        for(Message message : batch.getMessages()) {
+            this.messageListener.onNewMessage(message);
+
+            if(requireAck(message)) {
+                this.ack(message);
+            } else {
+                logger.debug("No ACK: " + message.getSequence() + " window size: " + message.getPayload().getWindowSize() );
+            }
         }
     }
 
