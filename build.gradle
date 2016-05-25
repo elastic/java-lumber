@@ -41,6 +41,7 @@ task fatJar(type: Jar) {
 }
 
 task copyJarToLogstashInputBeats(type: Copy, dependsOn:[fatJar]) {
+    outputs.upToDateWhen { false }
     copy {
         from "${buildDir}/libs/beats-all.jar"
         into "${System.env.LOGSTASH_BEATS_PLUGINS}"
