@@ -2,19 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="50151871-6f39-46dd-af32-969a79332128" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/logstash/beats/Batch.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/logstash/beats/V2Acking.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/main/org/logstash/beats/BeatsHandler.class" afterPath="$PROJECT_DIR$/build/classes/main/org/logstash/beats/BeatsHandler.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/main/org/logstash/beats/BeatsParser$1.class" afterPath="$PROJECT_DIR$/build/classes/main/org/logstash/beats/BeatsParser$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/main/org/logstash/beats/BeatsParser$States.class" afterPath="$PROJECT_DIR$/build/classes/main/org/logstash/beats/BeatsParser$States.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/main/org/logstash/beats/BeatsParser.class" afterPath="$PROJECT_DIR$/build/classes/main/org/logstash/beats/BeatsParser.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/main/org/logstash/beats/Message.class" afterPath="$PROJECT_DIR$/build/classes/main/org/logstash/beats/Message.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/logstash/beats/AckingStrategyV2.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/org/logstash/beats/V2Acking.java" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.12/taskArtifacts/cache.properties.lock" afterPath="$PROJECT_DIR$/.gradle/2.12/taskArtifacts/cache.properties.lock" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.12/taskArtifacts/fileHashes.bin" afterPath="$PROJECT_DIR$/.gradle/2.12/taskArtifacts/fileHashes.bin" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.12/taskArtifacts/fileSnapshots.bin" afterPath="$PROJECT_DIR$/.gradle/2.12/taskArtifacts/fileSnapshots.bin" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.12/taskArtifacts/outputFileStates.bin" afterPath="$PROJECT_DIR$/.gradle/2.12/taskArtifacts/outputFileStates.bin" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.12/taskArtifacts/taskArtifacts.bin" afterPath="$PROJECT_DIR$/.gradle/2.12/taskArtifacts/taskArtifacts.bin" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/libs/beats-all.jar" afterPath="$PROJECT_DIR$/build/libs/beats-all.jar" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/resources/main/log4j.properties" afterPath="$PROJECT_DIR$/build/resources/main/log4j.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/logstash/beats/AckingStrategy.java" afterPath="$PROJECT_DIR$/src/main/java/org/logstash/beats/AckingStrategy.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/logstash/beats/Batch.java" afterPath="$PROJECT_DIR$/src/main/java/org/logstash/beats/Batch.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsHandler.java" afterPath="$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsParser.java" afterPath="$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsParser.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/logstash/beats/Message.java" afterPath="$PROJECT_DIR$/src/main/java/org/logstash/beats/Message.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/logstash/beats/Payload.java" afterPath="$PROJECT_DIR$/src/main/java/org/logstash/beats/Payload.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/logstash/beats/Runner.java" afterPath="$PROJECT_DIR$/src/main/java/org/logstash/beats/Runner.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/log4j.properties" afterPath="$PROJECT_DIR$/src/main/resources/log4j.properties" />
     </list>
     <ignored path="beats.iws" />
@@ -51,16 +55,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Server.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Server.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="59" column="48" selection-start-line="59" selection-start-column="48" selection-end-line="59" selection-end-column="48" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="BeatsParser.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsParser.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -75,11 +69,9 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Batch.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="26" column="5" selection-start-line="26" selection-start-column="5" selection-end-line="26" selection-end-column="5" />
+              <caret line="29" column="1" selection-start-line="29" selection-start-column="1" selection-end-line="29" selection-end-column="1" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#349#350#0" expanded="true" />
-                <element signature="e#392#393#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -89,8 +81,11 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsHandler.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="32" column="32" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
-              <folding />
+              <caret line="48" column="32" selection-start-line="48" selection-start-column="32" selection-end-line="48" selection-end-column="32" />
+              <folding>
+                <element signature="e#891#892#0" expanded="true" />
+                <element signature="e#945#946#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -98,28 +93,18 @@
       <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8369803">
-              <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.70568925">
+              <caret line="43" column="10" selection-start-line="43" selection-start-column="10" selection-end-line="43" selection-end-column="10" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AckingStrategy.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/AckingStrategy.java">
+      <file leaf-file-name="Runner.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Runner.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="8" column="68" selection-start-line="8" selection-start-column="68" selection-end-line="8" selection-end-column="68" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="V2Acking.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/V2Acking.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="5" column="21" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
+              <caret line="13" column="1" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -129,8 +114,32 @@
         <entry file="file://$PROJECT_DIR$/src/main/resources/log4j.properties">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+              <caret line="1" column="21" selection-start-line="1" selection-start-column="21" selection-end-line="1" selection-end-column="21" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AckingStrategy.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/AckingStrategy.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AckingStrategyV2.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/AckingStrategyV2.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="13" column="30" selection-start-line="13" selection-start-column="30" selection-end-line="13" selection-end-column="30" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#636#637#0" expanded="true" />
+                <element signature="e#680#681#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -139,16 +148,12 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Payload.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="27" column="1" selection-start-line="27" selection-start-column="1" selection-end-line="27" selection-end-column="1" />
+              <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
               <folding>
-                <element signature="e#196#197#0" expanded="false" />
-                <element signature="e#227#228#0" expanded="false" />
-                <element signature="e#272#273#0" expanded="false" />
-                <element signature="e#312#313#0" expanded="false" />
-                <element signature="e#347#348#0" expanded="false" />
-                <element signature="e#380#381#0" expanded="false" />
-                <element signature="e#430#431#0" expanded="false" />
-                <element signature="e#474#475#0" expanded="false" />
+                <element signature="e#188#189#0" expanded="true" />
+                <element signature="e#227#228#0" expanded="true" />
+                <element signature="e#276#277#0" expanded="true" />
+                <element signature="e#324#325#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -158,7 +163,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Message.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="41" column="14" selection-start-line="41" selection-start-column="14" selection-end-line="41" selection-end-column="14" />
+              <caret line="52" column="0" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
               <folding>
                 <element signature="e#732#733#0" expanded="true" />
                 <element signature="e#759#760#0" expanded="true" />
@@ -442,20 +447,21 @@
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsProcolParser.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Envelope.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Protocol.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Payload.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsAcking.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Runner.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/KeepAliveHandler.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/MessageListener.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/IMessageListener.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Server.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Message.java" />
-        <option value="$PROJECT_DIR$/src/main/resources/log4j.properties" />
-        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Batch.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsParser.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/V2Acking.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsHandler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Message.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Batch.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/AckingStrategy.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsHandler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Runner.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/Payload.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/logstash/beats/AckingStrategyV2.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/log4j.properties" />
         <option value="$PROJECT_DIR$/build.gradle" />
       </list>
     </option>
@@ -583,36 +589,6 @@
               <option name="myItemId" value="beats" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="V2Acking.java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="beats" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="beats" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="beats" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -668,7 +644,7 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="MAIN_CLASS_NAME" value="Runner" />
+      <option name="MAIN_CLASS_NAME" value="org.logstash.beats.Runner" />
       <option name="VM_PARAMETERS" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
@@ -1106,7 +1082,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="45" column="13" selection-start-line="45" selection-start-column="13" selection-end-line="45" selection-end-column="13" />
-          <folding />
+          <folding>
+            <element signature="e#891#892#0" expanded="true" />
+            <element signature="e#945#946#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1131,14 +1110,10 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="27" column="1" selection-start-line="27" selection-start-column="1" selection-end-line="27" selection-end-column="1" />
           <folding>
-            <element signature="e#196#197#0" expanded="false" />
-            <element signature="e#227#228#0" expanded="false" />
-            <element signature="e#272#273#0" expanded="false" />
-            <element signature="e#312#313#0" expanded="false" />
-            <element signature="e#347#348#0" expanded="false" />
-            <element signature="e#380#381#0" expanded="false" />
-            <element signature="e#430#431#0" expanded="false" />
-            <element signature="e#474#475#0" expanded="false" />
+            <element signature="e#188#189#0" expanded="true" />
+            <element signature="e#227#228#0" expanded="true" />
+            <element signature="e#276#277#0" expanded="true" />
+            <element signature="e#324#325#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1202,7 +1177,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="45" column="13" selection-start-line="45" selection-start-column="13" selection-end-line="45" selection-end-column="13" />
-          <folding />
+          <folding>
+            <element signature="e#891#892#0" expanded="true" />
+            <element signature="e#945#946#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1227,14 +1205,10 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="27" column="1" selection-start-line="27" selection-start-column="1" selection-end-line="27" selection-end-column="1" />
           <folding>
-            <element signature="e#196#197#0" expanded="false" />
-            <element signature="e#227#228#0" expanded="false" />
-            <element signature="e#272#273#0" expanded="false" />
-            <element signature="e#312#313#0" expanded="false" />
-            <element signature="e#347#348#0" expanded="false" />
-            <element signature="e#380#381#0" expanded="false" />
-            <element signature="e#430#431#0" expanded="false" />
-            <element signature="e#474#475#0" expanded="false" />
+            <element signature="e#188#189#0" expanded="true" />
+            <element signature="e#227#228#0" expanded="true" />
+            <element signature="e#276#277#0" expanded="true" />
+            <element signature="e#324#325#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1290,7 +1264,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#891#892#0" expanded="true" />
+            <element signature="e#945#946#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1330,14 +1307,10 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
           <folding>
-            <element signature="e#196#197#0" expanded="false" />
-            <element signature="e#227#228#0" expanded="false" />
-            <element signature="e#272#273#0" expanded="false" />
-            <element signature="e#312#313#0" expanded="false" />
-            <element signature="e#347#348#0" expanded="false" />
-            <element signature="e#380#381#0" expanded="false" />
-            <element signature="e#430#431#0" expanded="false" />
-            <element signature="e#474#475#0" expanded="false" />
+            <element signature="e#188#189#0" expanded="true" />
+            <element signature="e#227#228#0" expanded="true" />
+            <element signature="e#276#277#0" expanded="true" />
+            <element signature="e#324#325#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1356,10 +1329,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Runner.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Protocol.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="46" selection-start-line="5" selection-start-column="46" selection-end-line="5" selection-end-column="46" />
+          <caret line="18" column="9" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Server.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="59" column="48" selection-start-line="59" selection-start-column="48" selection-end-line="59" selection-end-column="48" />
           <folding />
         </state>
       </provider>
@@ -1380,50 +1361,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Protocol.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Runner.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="18" column="9" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Payload.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="27" column="1" selection-start-line="27" selection-start-column="1" selection-end-line="27" selection-end-column="1" />
-          <folding>
-            <element signature="e#196#197#0" expanded="false" />
-            <element signature="e#227#228#0" expanded="false" />
-            <element signature="e#272#273#0" expanded="false" />
-            <element signature="e#312#313#0" expanded="false" />
-            <element signature="e#347#348#0" expanded="false" />
-            <element signature="e#380#381#0" expanded="false" />
-            <element signature="e#430#431#0" expanded="false" />
-            <element signature="e#474#475#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Message.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="41" column="14" selection-start-line="41" selection-start-column="14" selection-end-line="41" selection-end-column="14" />
-          <folding>
-            <element signature="e#732#733#0" expanded="true" />
-            <element signature="e#759#760#0" expanded="true" />
-            <element signature="e#863#864#0" expanded="true" />
-            <element signature="e#893#894#0" expanded="true" />
-            <element signature="e#1031#1032#0" expanded="true" />
-            <element signature="e#1106#1107#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/log4j.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <caret line="13" column="1" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
           <folding />
         </state>
       </provider>
@@ -1431,11 +1372,35 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Batch.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="26" column="5" selection-start-line="26" selection-start-column="5" selection-end-line="26" selection-end-column="5" />
+          <caret line="29" column="1" selection-start-line="29" selection-start-column="1" selection-end-line="29" selection-end-column="1" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#349#350#0" expanded="true" />
-            <element signature="e#392#393#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="48" column="32" selection-start-line="48" selection-start-column="32" selection-end-line="48" selection-end-column="32" />
+          <folding>
+            <element signature="e#891#892#0" expanded="true" />
+            <element signature="e#945#946#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Message.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="52" column="0" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
+          <folding>
+            <element signature="e#732#733#0" expanded="true" />
+            <element signature="e#759#760#0" expanded="true" />
+            <element signature="e#863#864#0" expanded="true" />
+            <element signature="e#893#894#0" expanded="true" />
+            <element signature="e#1031#1032#0" expanded="true" />
+            <element signature="e#1106#1107#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1448,42 +1413,51 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Server.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/Payload.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="59" column="48" selection-start-line="59" selection-start-column="48" selection-end-line="59" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/V2Acking.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="21" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/BeatsHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="32" column="32" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
-          <folding />
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+          <folding>
+            <element signature="e#188#189#0" expanded="true" />
+            <element signature="e#227#228#0" expanded="true" />
+            <element signature="e#276#277#0" expanded="true" />
+            <element signature="e#324#325#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/AckingStrategy.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="8" column="68" selection-start-line="8" selection-start-column="68" selection-end-line="8" selection-end-column="68" />
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/logstash/beats/AckingStrategyV2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="30" selection-start-line="13" selection-start-column="30" selection-end-line="13" selection-end-column="30" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#636#637#0" expanded="true" />
+            <element signature="e#680#681#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/log4j.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1" column="21" selection-start-line="1" selection-start-column="21" selection-end-line="1" selection-end-column="21" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8369803">
-          <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.70568925">
+          <caret line="43" column="10" selection-start-line="43" selection-start-column="10" selection-end-line="43" selection-end-column="10" />
           <folding />
         </state>
       </provider>

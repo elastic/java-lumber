@@ -9,11 +9,16 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @ChannelHandler.Sharable
 public class BeatsHandler extends ChannelInboundHandlerAdapter {
+    private AckingStrategy acking = AckingStrategy.get(Protocol.VERSION_2);
     private static Logger logger = Logger.getLogger(Server.class.getName());
+    private AtomicBoolean processing = new AtomicBoolean(false);
     private final IMessageListener messageListener;
     private ChannelHandlerContext ctx;
+
 
     public BeatsHandler(IMessageListener messageListener) {
         this.messageListener = messageListener;
@@ -26,23 +31,17 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object data) {
-
-
         logger.debug("Received a new payload");
+
+        this.processing.compareAndSet(false, true);
+
         Batch batch = (Batch) data;
-        AckingStrategy acking = AckingStrategy.get(Protocol.VERSION_2);
-
-
-
         for(Message message : batch.getMessages()) {
             this.messageListener.onNewMessage(message);
-
-            if(requireAck(message)) {
-                this.ack(message);
-            } else {
-                logger.debug("No ACK: " + message.getSequence() + " window size: " + message.getPayload().getWindowSize() );
-            }
+            this.acking.ack(message, ctx);
         }
+
+        this.processing.compareAndSet(true, false);
     }
 
     @Override
@@ -66,36 +65,16 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
 
     private void clientTimeout() {
         logger.debug("Client Timeout");
+
         this.ctx.close();
     }
 
     private void sendKeepAlive() {
-        logger.debug("Sending KeepAlive");
-
-        ByteBuf buffer  = ctx.alloc().buffer(6);
-        buffer.writeByte('2');
-        buffer.writeByte('A');
-        buffer.writeInt(0);
-
-        this.ctx.writeAndFlush(buffer);
-    }
-
-    private void ack(Message message) {
-        logger.debug("Sending ACK: " + message.getSequence() + " window size: " + message.getPayload().getWindowSize() );
-
-        ByteBuf buffer  = ctx.alloc().buffer(6);
-        buffer.writeByte('2');
-        buffer.writeByte('A');
-        buffer.writeInt(message.getSequence());
-
-        this.ctx.writeAndFlush(buffer);
-
-    }
-
-    private boolean requireAck(Message message){
-        if(message.getPayload().getWindowSize() == message.getSequence()) {
-            return true;
+        // If we are actually blocked on processing
+        // we can send a keep alive.
+        if(this.processing.get()) {
+            logger.debug("Sending KeepAlive");
+            this.acking.keepAlive(this.ctx);
         }
-        return false;
     }
 }

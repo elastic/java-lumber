@@ -1,12 +1,18 @@
 package org.logstash.beats;
 
-/**
- * Created by ph on 2016-05-20.
- */
+import io.netty.channel.ChannelHandlerContext;
+
 public abstract class AckingStrategy {
-        private static AckingStrategy ackingStraegyV2 = new AckingStrategyV2();
+        private static AckingStrategy ackingStrategyV2 = new AckingStrategyV2();
 
-        public static AckingStragy get(byte protocol, ChannelContext) {
+        public abstract void ack(Message message, ChannelHandlerContext ctx);
 
+        public void keepAlive(ChannelHandlerContext ctx) {
         }
+
+        public static AckingStrategy get(byte protocol) {
+                return ackingStrategyV2;
+        }
+
+
 }

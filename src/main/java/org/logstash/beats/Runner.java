@@ -1,4 +1,4 @@
-import org.logstash.beats.Server;
+package org.logstash.beats;
 
 import java.util.logging.Logger;
 
