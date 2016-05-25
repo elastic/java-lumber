@@ -2,6 +2,7 @@ package org.logstash.beats;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
@@ -21,9 +22,8 @@ public class BeatsParser extends ByteToMessageDecoder {
     private static final int CHUNK_SIZE = 1024;
 
     private final static Logger logger = Logger.getLogger(Server.class.getName());
-    private final static ObjectMapper mapper = new ObjectMapper();
+    private final static ObjectMapper mapper = new ObjectMapper().registerModule(new AfterburnerModule());
 
-    private final Inflater decompresser = new Inflater();
     private Batch batch = new Batch();
 
     private enum States {
@@ -106,7 +106,7 @@ public class BeatsParser extends ByteToMessageDecoder {
                 // the windows and the sequence number, If the FSM read a new window and I have still
                 // events buffered I should send them down to the next handler.
                 if(!batch.isEmpty()) {
-                    logger.warn("New window size received but the current batch was complete, sending the current batch");
+                    logger.warn("New window size received but the current batch was not complete, sending the current batch");
                     out.add(this.batch);
                 }
 
