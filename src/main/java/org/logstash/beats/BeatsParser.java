@@ -14,7 +14,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 
@@ -160,11 +159,9 @@ public class BeatsParser extends ByteToMessageDecoder {
             }
             case READ_JSON: {
                 logger.debug("Running: READ_JSON");
-                ByteBufInputStream input = new ByteBufInputStream(in.readBytes((int) this.requiredBytes));
-                String line = input.readLine();
-                logger.debug("Contents: " + line);
 
-                Message message = new Message(payload, sequence, (Map) mapper.readValue(line, Object.class));
+                ByteBuf buffer = in.readBytes((int) this.requiredBytes);
+                Message message = new Message(payload, sequence, (Map) mapper.readValue(buffer.array(), Object.class));
 
                 batch.addMessage(message);
 
