@@ -13,6 +13,4 @@ public abstract class AckingStrategy {
         public static AckingStrategy get(byte protocol) {
                 return ackingStrategyV2;
         }
-
-
 }

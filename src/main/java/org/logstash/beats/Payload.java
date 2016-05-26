@@ -4,9 +4,7 @@ public class Payload {
         private int protocol;
         private long windowSize;
 
-
-        public Payload() {
-        }
+        public Payload() {        }
 
         public int getProtocol() {
             return protocol;

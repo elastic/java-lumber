@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Batch {
-    private List<Message> messages = new ArrayList<>();
+    private List<Message> messages = new ArrayList();
 
     public List<Message> getMessages() {
         return this.messages;
