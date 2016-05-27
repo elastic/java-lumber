@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.InflaterInputStream;
@@ -33,6 +34,7 @@ public class BeatsParser extends ByteToMessageDecoder {
         READ_COMPRESSED_FRAME_HEADER,
         READ_COMPRESSED_FRAME,
         READ_JSON,
+        READ_DATA_FIELDS,
     }
 
     private States currentState = States.READ_HEADER;
@@ -111,6 +113,38 @@ public class BeatsParser extends ByteToMessageDecoder {
 
                 this.resetBatch();
                 transitionToReadHeader();
+                break;
+            }
+            case READ_DATA_FIELDS: {
+                logger.debug("Running: READ_DATA_HEADER");
+                this.sequence = (int) in.readUnsignedInt();
+                int fieldsCount = (int) in.readUnsignedInt();
+                int count = 0;
+
+                Map dataMap = new HashMap<String, String>();
+
+                while(count < fieldsCount) {
+                    int fieldLength = (int) in.readUnsignedInt();
+                    String field = in.readBytes(fieldLength).toString();
+
+                    int dataLength = (int) in.readUnsignedInt();
+                    String data = in.readBytes(dataLength).toString();
+
+                    dataMap.put(field, data);
+
+                    count++;
+                }
+
+                Message message = new Message(payload, sequence, dataMap);
+                batch.addMessage(message);
+
+                if(batch.size() == this.payload.getWindowSize()) {
+                    out.add(batch);
+                    this.resetBatch();
+                }
+
+                transitionToReadHeader();
+
                 break;
             }
             case READ_JSON_HEADER: {
