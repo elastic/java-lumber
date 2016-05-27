@@ -94,6 +94,10 @@ public class BeatsParser extends ByteToMessageDecoder {
                         transition(States.READ_COMPRESSED_FRAME_HEADER, 4);
                         break;
                     }
+                    case Protocol.CODE_FRAME: {
+                        transition(States.READ_DATA_FIELDS, 8);
+                        break;
+                    }
                 }
                 break;
             }
@@ -116,7 +120,7 @@ public class BeatsParser extends ByteToMessageDecoder {
                 break;
             }
             case READ_DATA_FIELDS: {
-                logger.debug("Running: READ_DATA_HEADER");
+                logger.debug("Running: READ_DATA_FIELDS");
                 this.sequence = (int) in.readUnsignedInt();
                 int fieldsCount = (int) in.readUnsignedInt();
                 int count = 0;

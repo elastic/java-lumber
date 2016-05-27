@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @ChannelHandler.Sharable
 public class BeatsHandler extends ChannelInboundHandlerAdapter {
-    private AckingStrategy acking = AckingStrategy.get(Protocol.VERSION_2);
+    private AckingStrategy acking = AckingStrategy.get(Protocol.VERSION_1);
     private static Logger logger = Logger.getLogger(Server.class.getName());
     private AtomicBoolean processing = new AtomicBoolean(false);
     private final IMessageListener messageListener;
@@ -37,6 +37,7 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
 
         Batch batch = (Batch) data;
         for(Message message : batch.getMessages()) {
+            logger.debug("Sending a new message for the listener, sequence: " + message.getSequence());
             this.messageListener.onNewMessage(message);
             this.acking.ack(message, ctx);
         }

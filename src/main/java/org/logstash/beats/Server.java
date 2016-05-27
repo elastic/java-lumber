@@ -11,6 +11,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.apache.log4j.Logger;
 
@@ -86,7 +87,9 @@ public class Server {
             ChannelPipeline pipeline = socket.pipeline();
 
             if(server.isSslEnable()) {
-                pipeline.addLast(server.sslContext.newHandler(socket.alloc()));
+                SslHandler sslHandler = server.sslContext.newHandler(socket.alloc());
+                sslHandler.engine().setEnabledProtocols(new String[] { "TLSv1.2" });
+                pipeline.addLast(sslHandler);
             }
 
             pipeline.addLast("logger", this.loggingHandler);
