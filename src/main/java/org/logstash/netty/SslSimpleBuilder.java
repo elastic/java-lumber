@@ -21,6 +21,12 @@ public class SslSimpleBuilder {
     private final File sslCertificateFile;
     private final boolean insecure = false;
 
+
+    // TODO default to TLSv1.2
+    // TODO DEFAULT TO THE MODERN MOZILLA CIPHERS LIST.
+    // TODO LSF MIGHT NEED TO CHANGES STUFF IN THEIR CONFIG.
+    // TODO Mutual auth.
+
     // TODO disable local trust store by default.
     // This cipher selection comes from https://wiki.mozilla.org/Security/Server_Side_TLS
     // TODO cypher_suites
