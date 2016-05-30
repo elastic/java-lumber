@@ -7,17 +7,14 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.EventExecutorGroup;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import java.io.File;
 
 public class Server {
     private int port;
@@ -61,7 +58,7 @@ public class Server {
         return this;
     }
 
-        public void setMessageListener(IMessageListener messageListener) {
+    public void setMessageListener(IMessageListener messageListener) {
         this.messageListener = messageListener;
     }
 
@@ -74,8 +71,12 @@ public class Server {
     }
 
     private class BeatsInitializer extends ChannelInitializer<SocketChannel> {
+        private final int DEFAULT_IDLESTATEHANDLER_THREAD = 4;
+        private final EventExecutorGroup idleExecutorGroup = new DefaultEventExecutorGroup(DEFAULT_IDLESTATEHANDLER_THREAD);
         private final BeatsHandler beatsHandler;
         private final LoggingHandler loggingHandler = new LoggingHandler();
+        private final AckMessageEncoder ackEncoder = new AckMessageEncoder();
+
         private final Server server;
 
         public BeatsInitializer(Server server) {
@@ -93,9 +94,12 @@ public class Server {
             }
 
             pipeline.addLast("logger", this.loggingHandler);
-            pipeline.addLast("keep-alive-handler", new IdleStateHandler(60*15, 5, 0));
+            // We have set a specific executor for the idle check, because the `beatsHandler` can be
+            // blocked on the queue, this the idleStateHandler manage the `KeepAlive` signal.
+            pipeline.addLast(idleExecutorGroup, "keep-alive-handler", new IdleStateHandler(60*15, 5, 0));
             pipeline.addLast("beats-parser", new BeatsParser());
             pipeline.addLast("beats-handler", this.beatsHandler);
+            pipeline.addLast("ack-encoder", ackEncoder);
         }
     }
 }

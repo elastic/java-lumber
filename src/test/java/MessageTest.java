@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 
 
 public class MessageTest {
+    /*
     @Test
     public void TestGetData() {
         Map<Object, Object> map = new HashMap();
@@ -41,4 +42,5 @@ public class MessageTest {
         Message messageOlder = new Message(payload, 1, map);
         Message messageNewer = new Message(payload, 2, map);
     }
+    */
 }

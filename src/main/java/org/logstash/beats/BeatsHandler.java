@@ -1,10 +1,8 @@
 package org.logstash.beats;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.apache.log4j.Logger;
@@ -13,8 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @ChannelHandler.Sharable
 public class BeatsHandler extends ChannelInboundHandlerAdapter {
-    private AckingStrategy acking = AckingStrategy.get(Protocol.VERSION_1);
-    private static Logger logger = Logger.getLogger(Server.class.getName());
+    private static Logger logger = Logger.getLogger(BeatsHandler.class.getName());
     private AtomicBoolean processing = new AtomicBoolean(false);
     private final IMessageListener messageListener;
     private ChannelHandlerContext ctx;
@@ -39,7 +36,7 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
         for(Message message : batch.getMessages()) {
             logger.debug("Sending a new message for the listener, sequence: " + message.getSequence());
             this.messageListener.onNewMessage(message);
-            this.acking.ack(message, ctx);
+            ctx.write(new AckMessage(message));
         }
 
         this.processing.compareAndSet(true, false);
@@ -73,8 +70,8 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
         // If we are actually blocked on processing
         // we can send a keep alive.
         if(this.processing.get()) {
-            logger.debug("Sending KeepAlive");
-            this.acking.keepAlive(this.ctx);
+            logger.debug("Sending KeepAliveMessage");
+            this.ctx.write(new KeepAliveMessage());
         }
     }
 }
