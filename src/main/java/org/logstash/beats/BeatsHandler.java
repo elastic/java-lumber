@@ -59,7 +59,7 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
             if(e.state() == IdleState.WRITER_IDLE) {
                 this.sendKeepAlive();
             } else if(e.state() == IdleState.READER_IDLE) {
-                this.clientTimeout();Ide
+                this.clientTimeout();
             }
         }
     }
