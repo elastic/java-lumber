@@ -22,14 +22,14 @@ public class BeatsParserTest {
 
         Map map1 = new HashMap<String, String>();
         map1.put("line", "My super event log");
-        map1.put("coming-from", "beats");
+        map1.put("from", "beats");
 
         this.message1 = new Message(1, map1);
         this.batch.addMessage(this.message1);
 
         Map map2 = new HashMap<String, String>();
         map2.put("line", "Another world");
-        map2.put("game", "Little big Adventure");
+        map2.put("from", "Little big Adventure");
 
         this.message2 = new Message(2, map2);
         this.batch.addMessage(this.message2);
@@ -44,15 +44,12 @@ public class BeatsParserTest {
         Batch decodedBatch = (Batch) channel.readInbound();
         assertNotNull(decodedBatch);
 
-        assertEquals(this.batch.getMessages().get(0).getSequence(), decodedBatch.getMessages().get(0).getSequence());
-        assertEquals(this.batch.getMessages().get(1).getSequence(), decodedBatch.getMessages().get(1).getSequence());
-        assertEquals(this.batch.getMessages().get(0).getData().get("line"), decodedBatch.getMessages().get(0).getData().get("line"));
-        assertEquals(this.batch.getMessages().get(1).getData().get("line"), decodedBatch.getMessages().get(1).getData().get("line"));
-        assertEquals(this.batch.size(), decodedBatch.size());
+        assertMessages(this.batch, decodedBatch);
     }
 
     @Test
     public void testCompressedEncodingDecodingJson() {
+
         EmbeddedChannel channel = new EmbeddedChannel(new CompressedBatchEncoder(), new BeatsParser());
         channel.writeOutbound(this.batch);
         channel.writeInbound(channel.readOutbound());
@@ -60,10 +57,45 @@ public class BeatsParserTest {
         Batch decodedBatch = (Batch) channel.readInbound();
         assertNotNull(decodedBatch);
 
-        assertEquals(this.batch.getMessages().get(0).getSequence(), decodedBatch.getMessages().get(0).getSequence());
-        assertEquals(this.batch.getMessages().get(1).getSequence(), decodedBatch.getMessages().get(1).getSequence());
-        assertEquals(this.batch.getMessages().get(0).getData().get("line"), decodedBatch.getMessages().get(0).getData().get("line"));
-        assertEquals(this.batch.getMessages().get(1).getData().get("line"), decodedBatch.getMessages().get(1).getData().get("line"));
-        assertEquals(this.batch.size(), decodedBatch.size());
+        assertMessages(this.batch, decodedBatch);
+    }
+
+    @Test
+    public void testEncodingDecodingFields() {
+        this.batch.setProtocol(Protocol.VERSION_1);
+
+        EmbeddedChannel channel = new EmbeddedChannel(new BatchEncoder(), new BeatsParser());
+        channel.writeOutbound(this.batch);
+        channel.writeInbound(channel.readOutbound());
+
+        Batch decodedBatch = (Batch) channel.readInbound();
+        assertNotNull(decodedBatch);
+
+        assertMessages(this.batch, decodedBatch);
+    }
+
+
+    @Test
+    public void  testCompressedEncodingDecodingFields() {
+        this.batch.setProtocol(Protocol.VERSION_1);
+
+        EmbeddedChannel channel = new EmbeddedChannel(new CompressedBatchEncoder(), new BeatsParser());
+        channel.writeOutbound(this.batch);
+        channel.writeInbound(channel.readOutbound());
+
+        Batch decodedBatch = (Batch) channel.readInbound();
+
+        assertMessages(this.batch, decodedBatch);
+    }
+
+    private void assertMessages(Batch expected, Batch actual) {
+        assertNotNull(actual);
+        assertEquals(expected.getMessages().get(0).getSequence(), actual.getMessages().get(0).getSequence());
+        assertEquals(expected.getMessages().get(1).getSequence(), actual.getMessages().get(1).getSequence());
+        assertEquals(expected.getMessages().get(0).getData().get("line"), actual.getMessages().get(0).getData().get("line"));
+        assertEquals(expected.getMessages().get(1).getData().get("line"), actual.getMessages().get(1).getData().get("line"));
+        assertEquals(expected.getMessages().get(0).getData().get("from"), actual.getMessages().get(0).getData().get("from"));
+        assertEquals(expected.getMessages().get(1).getData().get("from"), actual.getMessages().get(1).getData().get("from"));
+        assertEquals(expected.size(), actual.size());
     }
 }

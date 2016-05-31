@@ -24,6 +24,12 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         this.ctx = ctx;
+        this.messageListener.onNewConnection(ctx);
+    }
+
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        this.messageListener.onConnectionClose(ctx);
     }
 
     @Override

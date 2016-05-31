@@ -42,12 +42,6 @@ public class BeatsParser extends ByteToMessageDecoder {
     private int sequence = 0;
 
     @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        // Gather a bit of information to be used as part of the identity stream.
-       ///this.remoteAddress = ctx.channel().remoteAddress().toString();
-    }
-
-    @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         if(!hasEnoughBytes(in)) {
             return;

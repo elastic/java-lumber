@@ -41,4 +41,10 @@ public class Message implements Comparable<Message> {
     public void setBatch(Batch batch) {
         this.batch = batch;
     }
+
+    public String getIdentityStream() {
+
+        return this.identityStream;
+
+    }
 }
