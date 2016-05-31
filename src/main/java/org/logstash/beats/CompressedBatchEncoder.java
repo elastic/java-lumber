@@ -13,11 +13,9 @@ import java.util.zip.DeflaterOutputStream;
 
 public class CompressedBatchEncoder extends BatchEncoder {
     private final static Logger logger = Logger.getLogger(BatchEncoder.class.getName());
-    private static final int CHUNK_SIZE = 1024;
 
     @Override
     protected ByteBuf getPayload(ChannelHandlerContext ctx, Batch batch) throws IOException {
-        logger.debug("Getting json frame");
         ByteBuf payload = super.getPayload(ctx, batch);
 
         Deflater deflater = new Deflater();

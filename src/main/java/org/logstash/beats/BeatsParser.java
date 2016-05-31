@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,8 +113,7 @@ public class BeatsParser extends ByteToMessageDecoder {
                 break;
             }
             case READ_DATA_FIELDS: {
-                // Lumberjack version 1 protocol
-                // which use the Key:Value format.
+                // Lumberjack version 1 protocol, which use the Key:Value format.
                 logger.debug("Running: READ_DATA_FIELDS");
                 this.sequence = (int) in.readUnsignedInt();
                 int fieldsCount = (int) in.readUnsignedInt();
@@ -123,10 +123,10 @@ public class BeatsParser extends ByteToMessageDecoder {
 
                 while(count < fieldsCount) {
                     int fieldLength = (int) in.readUnsignedInt();
-                    String field = in.readBytes(fieldLength).toString();
+                    String field = in.readBytes(fieldLength).toString(Charset.forName("UTF8"));
 
                     int dataLength = (int) in.readUnsignedInt();
-                    String data = in.readBytes(dataLength).toString();
+                    String data = in.readBytes(dataLength).toString(Charset.forName("UTF8"));
 
                     dataMap.put(field, data);
 
