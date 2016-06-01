@@ -15,7 +15,7 @@ public class Runner {
         logger.info("Starting Beats Bulk");
 
         // TODO remove this
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
+        // ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
 
         Server server = new Server(DEFAULT_PORT);
 

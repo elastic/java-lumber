@@ -103,16 +103,11 @@ public class BeatsHandlerTest {
     }
 
     @Test
-    public void TestItCreateAckMessages() {
+    public void TestItAckLastMessageFromBatch() {
         EmbeddedChannel embeddedChannel = new EmbeddedChannel(new BeatsHandler(spyListener));
         embeddedChannel.writeInbound(batch);
 
-        AckMessage ack = (AckMessage) embeddedChannel.readInbound();
-        assertEquals(1, ack.getSequence());
-/*
-        ack = (AckMessage) embeddedChannel.readInbound();
-        assertEquals(2, ack.getSequence());
-*/
+
         embeddedChannel.close();
     }
 }

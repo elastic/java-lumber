@@ -1,6 +1,7 @@
 import org.junit.Test;
 import org.logstash.beats.Batch;
 import org.logstash.beats.Message;
+import org.logstash.beats.Protocol;
 
 import java.util.HashMap;
 import static org.junit.Assert.*;
@@ -21,5 +22,17 @@ public class BatchTest {
         assertEquals(0, batch.size());
         batch.addMessage(new Message(1, new HashMap()));
         assertEquals(1, batch.size());
+    }
+
+    @Test
+    public void TestGetDefaultProtocol() {
+        Batch batch = new Batch();
+        assertEquals(Protocol.VERSION_2, batch.getProtocol());
+    }
+
+    @Test
+    public void TestGetSetProtocol() {
+        Batch batch = new Batch();
+        assertEquals(Protocol.VERSION_2, batch.getProtocol());
     }
 }

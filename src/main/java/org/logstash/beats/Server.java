@@ -75,7 +75,6 @@ public class Server {
         private final EventExecutorGroup idleExecutorGroup = new DefaultEventExecutorGroup(DEFAULT_IDLESTATEHANDLER_THREAD);
         private final BeatsHandler beatsHandler;
         private final LoggingHandler loggingHandler = new LoggingHandler();
-        private final AckMessageEncoder ackEncoder = new AckMessageEncoder();
 
         private final Server server;
 
@@ -99,7 +98,6 @@ public class Server {
             pipeline.addLast(idleExecutorGroup, "keep-alive-handler", new IdleStateHandler(60*15, 5, 0));
             pipeline.addLast("beats-parser", new BeatsParser());
             pipeline.addLast("beats-handler", this.beatsHandler);
-            pipeline.addLast("ack-encoder", ackEncoder);
         }
     }
 }

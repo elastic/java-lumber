@@ -1,5 +1,6 @@
 package org.logstash.beats;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -42,7 +43,10 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
         for(Message message : batch.getMessages()) {
             logger.debug("Sending a new message for the listener, sequence: " + message.getSequence());
             this.messageListener.onNewMessage(message);
-            ctx.write(new AckMessage(message));
+
+            if(needAck(message)) {
+                ack(ctx, message);
+            }
         }
 
         this.processing.compareAndSet(true, false);
@@ -67,6 +71,26 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    private boolean needAck(Message message) {
+        if (message.getSequence() == message.getBatch().getWindowSize()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void ack(ChannelHandlerContext ctx, Message message) {
+        writeAck(ctx, message.getBatch().getProtocol(), message.getSequence());
+    }
+
+    public void writeAck(ChannelHandlerContext ctx, byte protocol, int sequence) {
+        ByteBuf buffer = ctx.alloc().buffer(6);
+        buffer.writeByte(protocol);
+        buffer.writeByte('A');
+        buffer.writeInt(sequence);
+        ctx.writeAndFlush(buffer);
+    }
+
     private void clientTimeout() {
         logger.debug("Client Timeout");
         this.ctx.close();
@@ -76,8 +100,7 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
         // If we are actually blocked on processing
         // we can send a keep alive.
         if(this.processing.get()) {
-            logger.debug("Sending KeepAliveMessage");
-            this.ctx.write(new KeepAliveMessage());
+            writeAck(this.ctx, Protocol.VERSION_2, 0);
         }
     }
 }
