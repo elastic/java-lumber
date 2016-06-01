@@ -101,7 +101,7 @@ public class SslSimpleBuilder {
 
     public SslContext build() throws SSLException {
         SslContextBuilder sslBuilder = SslContextBuilder.forServer(this.sslCertificateFile, this.sslKeyFile);
-        sslBuilder.ciphers(Arrays.asList(DEFAULT_CIPHERS));
+        //sslBuilder.ciphers(Arrays.asList(DEFAULT_CIPHERS));
         SslContext context = sslBuilder.build();
 
         logger.debug(context.cipherSuites());

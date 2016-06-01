@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @ChannelHandler.Sharable
 public class BeatsHandler extends ChannelInboundHandlerAdapter {
     private static Logger logger = Logger.getLogger(BeatsHandler.class.getName());
-    private AtomicBoolean processing = new AtomicBoolean(false);
+    private final AtomicBoolean processing = new AtomicBoolean(false);
     private final IMessageListener messageListener;
     private ChannelHandlerContext ctx;
 
@@ -50,7 +50,7 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+        logger.error("Exception", cause);
         ctx.close();
     }
 

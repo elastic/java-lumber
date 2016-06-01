@@ -1,12 +1,14 @@
 package org.logstash.beats;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 /**
  * Created by ph on 2016-05-30.
  */
+@ChannelHandler.Sharable
 public class AckMessageEncoder extends MessageToByteEncoder<AckMessage> {
     @Override
     protected void encode(ChannelHandlerContext ctx, AckMessage ack, ByteBuf out) throws Exception {

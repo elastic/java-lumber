@@ -1,6 +1,7 @@
 package org.logstash.beats;
 
 import io.netty.handler.ssl.SslContext;
+import io.netty.util.ResourceLeakDetector;
 import org.apache.log4j.Logger;
 import org.logstash.netty.SslSimpleBuilder;
 
@@ -13,9 +14,12 @@ public class Runner {
     static public void main(String[] args) throws Exception {
         logger.info("Starting Beats Bulk");
 
+        // TODO remove this
+        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
+
         Server server = new Server(DEFAULT_PORT);
 
-        //if(args[1] != "ssl") {
+        if(true == false) {
             logger.debug("Using SSL");
 
             String sslCertificate = "/Users/ph/es/certificates/certificate.crt";
@@ -29,7 +33,7 @@ public class Runner {
                     .build();
 
             server.enableSSL(context);
-        //}
+        }
 
         server.listen();
     }

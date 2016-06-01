@@ -1,5 +1,6 @@
 package org.logstash.beats;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Message implements Comparable<Message> {
@@ -43,8 +44,21 @@ public class Message implements Comparable<Message> {
     }
 
     public String getIdentityStream() {
+        if(this.identityStream == null) {
+            Map beatsData = (HashMap<String, String>) this.getData().get("beat");
+
+            if(beatsData != null) {
+                String id = (String) beatsData.get("id");
+                String resourceId = (String) beatsData.get("resource_id");
+
+                if(id != null && resourceId != null) {
+                    this.identityStream = id + "-" + resourceId;
+                } else {
+                    this.identityStream = (String) beatsData.get("name") + "-" + (String) beatsData.get("source");
+                }
+            }
+        }
 
         return this.identityStream;
-
     }
 }

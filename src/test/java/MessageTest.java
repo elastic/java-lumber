@@ -4,6 +4,8 @@ import org.logstash.beats.Message;
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 
 public class MessageTest {
@@ -28,6 +30,61 @@ public class MessageTest {
         Map<Object, Object> map = new HashMap();
         Message messageOlder = new Message(1, map);
         Message messageNewer = new Message(2, map);
-        assertThat(messageNewer, greaterThan(messageOlder))
+
+        assertThat(messageNewer, is(greaterThan(messageOlder)));
+    }
+
+    @Test
+    public void TesGenerateAnIdentityStreamWhenIdAndResourceArePresent() {
+        Map<Object, Object> map = new HashMap();
+        Map<String, String> beatsData = new HashMap();
+
+        beatsData.put("id", "uuid1234");
+        beatsData.put("resource_id", "rid1234");
+
+        map.put("beat", beatsData);
+        Message message = new Message(1, map);
+
+        assertEquals("uuid1234-rid1234", message.getIdentityStream());
+    }
+
+    @Test
+    public void TesGenerateAnIdentityStreamWhenResourceIdIsAbsent() {
+        Map<Object, Object> map = new HashMap();
+        Map<String, String> beatsData = new HashMap();
+
+        beatsData.put("id", "uuid1234");
+        beatsData.put("name", "filebeat");
+        beatsData.put("source", "/var/log/message.log");
+
+        map.put("beat", beatsData);
+        Message message = new Message(1, map);
+
+        assertEquals("filebeat-/var/log/message.log", message.getIdentityStream());
+    }
+
+
+    @Test
+    public void TesGenerateAnIdentityStreamWhenIdIsAbsent() {
+        Map<Object, Object> map = new HashMap();
+        Map<String, String> beatsData = new HashMap();
+
+        beatsData.put("resource_id", "rid1234");
+        beatsData.put("name", "filebeat");
+        beatsData.put("source", "/var/log/message.log");
+
+        map.put("beat", beatsData);
+        Message message = new Message(1, map);
+
+        assertEquals("filebeat-/var/log/message.log", message.getIdentityStream());
+    }
+
+    @Test
+    public void TesGenerateAnIdentityStreamWhenIdAndResourceIdareAbsent() {
+        Map<Object, Object> map = new HashMap();
+
+        Message message = new Message(1, map);
+
+        assertNull(message.getIdentityStream());
     }
 }

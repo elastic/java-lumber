@@ -9,11 +9,9 @@ public class KeepAliveMessage extends AckMessage {
     public boolean ackNeeded() {
         return true;
     }
-
     public int getSequence() {
         return 0;
     }
-
     public int getProtocol() {
         return Protocol.VERSION_2;
     }
