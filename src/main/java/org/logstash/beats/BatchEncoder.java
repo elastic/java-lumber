@@ -13,7 +13,6 @@ import java.util.Map;
 
 
 public class BatchEncoder extends MessageToByteEncoder<Batch> {
-    private final static ObjectMapper mapper = new ObjectMapper().registerModule(new AfterburnerModule());
     private final static Logger logger = Logger.getLogger(BatchEncoder.class.getName());
 
 
@@ -44,7 +43,7 @@ public class BatchEncoder extends MessageToByteEncoder<Batch> {
         payload.writeByte('J');
         payload.writeInt(message.getSequence());
 
-        byte[] json = mapper.writeValueAsBytes(message.getData());
+        byte[] json = JsonUtils.mapper.writeValueAsBytes(message.getData());
         payload.writeInt(json.length);
         payload.writeBytes(json);
     }

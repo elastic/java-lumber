@@ -22,7 +22,6 @@ import java.util.zip.InflaterInputStream;
 public class BeatsParser extends ByteToMessageDecoder {
     private static final int CHUNK_SIZE = 1024;
     private final static Logger logger = Logger.getLogger(Server.class.getName());
-    private final static ObjectMapper mapper = new ObjectMapper().registerModule(new AfterburnerModule());
 
     private Batch batch = new Batch();
 
@@ -187,7 +186,7 @@ public class BeatsParser extends ByteToMessageDecoder {
                 logger.debug("Running: READ_JSON");
 
                 ByteBuf buffer = in.readBytes((int) this.requiredBytes);
-                Message message = new Message(sequence, (Map) mapper.readValue(buffer.array(), Object.class));
+                Message message = new Message(sequence, (Map) JsonUtils.mapper.readValue(buffer.array(), Object.class));
 
                 this.batch.addMessage(message);
 
