@@ -7,8 +7,10 @@ import io.netty.handler.ssl.SslHandler;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.jni.SSLContext;
 
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLException;
 import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
@@ -48,7 +50,7 @@ public class SslSimpleBuilder {
             "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"
     };
     private String[] protocols = new String[] { "TLSv1.2" };
-    private String[] certificateAuthorities;
+    private String certificateAuthorities;
     private String verifyMode;
     private String passPhrase;
 
@@ -67,13 +69,13 @@ public class SslSimpleBuilder {
         return this;
     }
 
-    public SslSimpleBuilder setCertificateAuthorities(String[] certificateAuthorities) {
-        certificateAuthorities = certificateAuthorities;
+    public SslSimpleBuilder setCertificateAuthorities(String cert) {
+        certificateAuthorities = cert;
         return this;
     }
 
-    public SslSimpleBuilder setVerifyMode(String verifyMode) {
-        verifyMode = verifyMode;
+    public SslSimpleBuilder setVerifyMode(String mode) {
+        verifyMode = mode;
         return this;
     }
 
@@ -91,14 +93,32 @@ public class SslSimpleBuilder {
 
         builder.ciphers(Arrays.asList(ciphers));
 
+        if(requireClientAuth()) {
+            logger.debug("Certificate Authorities: " + certificateAuthorities);
+            builder.trustManager(createFile(certificateAuthorities));
+        }
 
         SslContext context = builder.build();
         SslHandler sslHandler = context.newHandler(bufferAllocator);
 
         logger.debug("TLS: " +  String.join(",", protocols));
-        sslHandler.engine().setEnabledProtocols(protocols);
+        SSLEngine engine = sslHandler.engine();
+        engine.setEnabledProtocols(protocols);
+
+        if(requireClientAuth()) {
+            engine.setUseClientMode(false);
+            engine.setNeedClientAuth(true);
+        }
 
         return sslHandler;
+    }
+
+    private boolean requireClientAuth() {
+        if(certificateAuthorities != null) {
+            return true;
+        }
+
+        return false;
     }
 
     private File createFile(String filepath)

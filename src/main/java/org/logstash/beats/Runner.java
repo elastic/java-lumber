@@ -30,8 +30,8 @@ public class Runner {
             logger.debug("SSLKey: " + sslKey);
 
             SslSimpleBuilder sslBuilder = new SslSimpleBuilder(sslCertificate, sslKey)
-                    .setProtocols(new String[] { "TLSv1.2" });
-                 //   .setCertificateAuthorities(new String[] { sslCertificate })
+                    .setProtocols(new String[] { "TLSv1.2" })
+                    .setCertificateAuthorities(sslCertificate);
             server.enableSSL(sslBuilder);
         }
 
