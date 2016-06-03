@@ -13,15 +13,20 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.EventExecutorGroup;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.Future;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.jni.SSL;
+import org.apache.tomcat.jni.Time;
 import org.logstash.netty.SslSimpleBuilder;
 
 import javax.net.ssl.SSLException;
+import java.util.concurrent.TimeUnit;
 
 
 public class Server {
     static final Logger logger = Logger.getLogger(Server.class.getName());
+    static final long SHUTDOWN_TIMEOUT_SECONDS = 10;
+
 
     private int port;
     private NioEventLoopGroup bossGroup;
@@ -52,12 +57,21 @@ public class Server {
             Channel channel = server.bind(port).sync().channel();
 
             channel.closeFuture().sync();
+
         } finally {
             bossGroup.shutdownGracefully();
             workGroup.shutdownGracefully();
         }
 
         return this;
+    }
+
+    public void stop() throws InterruptedException {
+        Future<?> bossWait = bossGroup.shutdownGracefully(0, SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        Future<?> workWait = workGroup.shutdownGracefully(0, SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+        bossWait.await();
+        workWait.await();
     }
 
     public void setMessageListener(IMessageListener listener) {
