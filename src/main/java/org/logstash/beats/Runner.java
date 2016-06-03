@@ -3,6 +3,7 @@ package org.logstash.beats;
 import io.netty.handler.ssl.SslContext;
 import io.netty.util.ResourceLeakDetector;
 import org.apache.log4j.Logger;
+import org.logstash.netty.PrivateKeyConverter;
 import org.logstash.netty.SslSimpleBuilder;
 
 
@@ -19,7 +20,7 @@ public class Runner {
 
         Server server = new Server(DEFAULT_PORT);
 
-        if(true == false) {
+        if(true) {
             logger.debug("Using SSL");
 
             String sslCertificate = "/Users/ph/es/certificates/certificate.crt";
@@ -30,9 +31,12 @@ public class Runner {
 
             SslContext context = new SslSimpleBuilder(sslCertificate, sslKey)
                     .protocols(new String[] { "TLSv1.2" })
+                    .setCertificateAuthorities(new String[] { sslCertificate })
+                    .setVerifyMode("VERIFY_PEER")
                     .build();
 
             server.enableSSL(context);
+
         }
 
         server.listen();

@@ -2,12 +2,19 @@ package org.logstash.netty;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
 import org.apache.log4j.Logger;
+import org.bouncycastle.util.io.pem.PemReader;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.FileSystem;
+import java.security.KeyPair;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,58 +40,17 @@ public class SslSimpleBuilder {
     // I think I would be in favor of using the defaults?
     // LOOK at the IANA column on the mozilla page.
     private final String[] DEFAULT_CIPHERS = new String[] {
-            "ECDHE-RSA-AES128-GCM-SHA256",
-            "ECDHE-ECDSA-AES128-GCM-SHA256",
-            "ECDHE-RSA-AES256-GCM-SHA384",
-            "ECDHE-ECDSA-AES256-GCM-SHA384",
-            "DHE-RSA-AES128-GCM-SHA256",
-            "DHE-DSS-AES128-GCM-SHA256",
-            "kEDH+AESGCM",
-            "ECDHE-RSA-AES128-SHA256",
-            "ECDHE-ECDSA-AES128-SHA256",
-            "ECDHE-RSA-AES128-SHA",
-            "ECDHE-ECDSA-AES128-SHA",
-            "ECDHE-RSA-AES256-SHA384",
-            "ECDHE-ECDSA-AES256-SHA384",
-            "ECDHE-RSA-AES256-SHA",
-            "ECDHE-ECDSA-AES256-SHA",
-            "DHE-RSA-AES128-SHA256",
-            "DHE-RSA-AES128-SHA",
-            "DHE-DSS-AES128-SHA256",
-            "DHE-RSA-AES256-SHA256",
-            "DHE-DSS-AES256-SHA",
-            "DHE-RSA-AES256-SHA",
-            "AES128-GCM-SHA256",
-            "AES256-GCM-SHA384",
-            "AES128-SHA256",
-            "AES256-SHA256",
-            "AES128-SHA",
-            "AES256-SHA",
-            "AES",
-            "CAMELLIA",
-            "DES-CBC3-SHA",
-            "!aNULL",
-            "!eNULL",
-            "!EXPORT",
-            "!DES",
-            "!RC4",
-            "!MD5",
-            "!PSK",
-            "!aECDH",
-            "!EDH-DSS-DES-CBC3-SHA",
-            "!EDH-RSA-DES-CBC3-SHA",
-            "!KRB5-DES-CBC3-SHA"
+
     };
     private String[] protocols = new String[] { "TLSv1", "TLSv1.1", "TLSv1.2" };
+    private String[] certificateAuthorities;
+    private String verifyMode;
 
     // TODO TLS, lets try to make sure we use similar or the same name for the option if possible.
     // https://www.elastic.co/guide/en/beats/filebeat/current/configuration-output-tls.html#_max_version
     // https://www.elastic.co/guide/en/beats/filebeat/current/configuration-output-tls.html#_min_version
 
-
     // TODO insecure.
-
-
     // TODO, check if we can convert x509 to PKCS8 on the fly.
     // because netty sslcontext builder only support pkcs8 for the private key ..
     // openssl pkcs8 -topk8 -nocrypt -in pkcs1_key_file -out pkcs8_key.pem
@@ -100,17 +66,29 @@ public class SslSimpleBuilder {
     }
 
     public SslContext build() throws SSLException {
-        SslContextBuilder sslBuilder = SslContextBuilder.forServer(this.sslCertificateFile, this.sslKeyFile);
+        SslContextBuilder sslBuilder = SslContextBuilder.forServer(this.sslCertificateFile, this.sslKeyFile, null);
         //sslBuilder.ciphers(Arrays.asList(DEFAULT_CIPHERS));
         SslContext context = sslBuilder.build();
 
         logger.debug(context.cipherSuites());
+        SslHandler handler = context.build();
+
 
         return context;
     }
+
 
     private File createFile(String filepath) {
         return new File(filepath);
     }
 
+    public SslSimpleBuilder setCertificateAuthorities(String[] certificateAuthorities) {
+        this.certificateAuthorities = certificateAuthorities;
+        return this;
+    }
+
+    public SslSimpleBuilder setVerifyMode(String verifyMode) {
+        this.verifyMode = verifyMode;
+        return this;
+    }
 }
