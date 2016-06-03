@@ -15,12 +15,12 @@ public class Runner {
     static public void main(String[] args) throws Exception {
         logger.info("Starting Beats Bulk");
 
-        // TODO remove this
+        // Check for leaks.
         // ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
 
         Server server = new Server(DEFAULT_PORT);
 
-        if(true) {
+        if(args.length > 0 && args[0].equals("ssl")) {
             logger.debug("Using SSL");
 
             String sslCertificate = "/Users/ph/es/certificates/certificate.crt";
@@ -29,14 +29,10 @@ public class Runner {
             logger.debug("SSLCertificate: " + sslCertificate);
             logger.debug("SSLKey: " + sslKey);
 
-            SslContext context = new SslSimpleBuilder(sslCertificate, sslKey)
-                    .protocols(new String[] { "TLSv1.2" })
-                    .setCertificateAuthorities(new String[] { sslCertificate })
-                    .setVerifyMode("VERIFY_PEER")
-                    .build();
-
-            server.enableSSL(context);
-
+            SslSimpleBuilder sslBuilder = new SslSimpleBuilder(sslCertificate, sslKey)
+                    .setProtocols(new String[] { "TLSv1.2" });
+                 //   .setCertificateAuthorities(new String[] { sslCertificate })
+            server.enableSSL(sslBuilder);
         }
 
         server.listen();

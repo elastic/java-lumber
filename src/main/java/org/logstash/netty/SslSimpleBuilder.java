@@ -1,22 +1,16 @@
 package org.logstash.netty;
 
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
 import org.apache.log4j.Logger;
-import org.bouncycastle.util.io.pem.PemReader;
+import org.apache.tomcat.jni.SSLContext;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLException;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.security.KeyPair;
 import java.util.Arrays;
-import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Created by ph on 2016-05-27.
@@ -24,71 +18,95 @@ import java.util.List;
 public class SslSimpleBuilder {
     public static Logger logger = Logger.getLogger(SslSimpleBuilder.class.getName());
 
-    private final File sslKeyFile;
-    private final File sslCertificateFile;
-    private final boolean insecure = false;
+    private File sslKeyFile;
+    private File sslCertificateFile;
 
+    // ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
+    /*
 
-    // TODO default to TLSv1.2
-    // TODO DEFAULT TO THE MODERN MOZILLA CIPHERS LIST.
-    // TODO LSF MIGHT NEED TO CHANGES STUFF IN THEIR CONFIG.
-    // TODO Mutual auth.
+    Mordern Ciphers List from
+    https://wiki.mozilla.org/Security/Server_Side_TLS
 
-    // TODO disable local trust store by default.
-    // This cipher selection comes from https://wiki.mozilla.org/Security/Server_Side_TLS
-    // TODO cypher_suites
-    // I think I would be in favor of using the defaults?
-    // LOOK at the IANA column on the mozilla page.
-    private final String[] DEFAULT_CIPHERS = new String[] {
+    ECDHE-ECDSA-AES256-GCM-SHA384
+    ECDHE-RSA-AES256-GCM-SHA384
+    ECDHE-ECDSA-CHACHA20-POLY1305 X
+    ECDHE-RSA-CHACHA20-POLY1305 X
+    ECDHE-ECDSA-AES128-GCM-SHA256
+    ECDHE-RSA-AES128-GCM-SHA256
+    ECDHE-ECDSA-AES256-SHA384
+    ECDHE-RSA-AES256-SHA384
+    ECDHE-ECDSA-AES128-SHA256
+    */
 
+    private String[] ciphers = new String[] {
+            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA38",
+            "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",
+            "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"
     };
-    private String[] protocols = new String[] { "TLSv1", "TLSv1.1", "TLSv1.2" };
+    private String[] protocols = new String[] { "TLSv1.2" };
     private String[] certificateAuthorities;
     private String verifyMode;
+    private String passPhrase;
 
-    // TODO TLS, lets try to make sure we use similar or the same name for the option if possible.
-    // https://www.elastic.co/guide/en/beats/filebeat/current/configuration-output-tls.html#_max_version
-    // https://www.elastic.co/guide/en/beats/filebeat/current/configuration-output-tls.html#_min_version
-
-    // TODO insecure.
-    // TODO, check if we can convert x509 to PKCS8 on the fly.
-    // because netty sslcontext builder only support pkcs8 for the private key ..
-    // openssl pkcs8 -topk8 -nocrypt -in pkcs1_key_file -out pkcs8_key.pem
-    // http://netty.io/wiki/sslcontextbuilder-and-private-key.html
     public SslSimpleBuilder(String sslCertificateFilePath, String sslKeyFilePath) {
-        this.sslCertificateFile = this.createFile(sslCertificateFilePath);
-        this.sslKeyFile = this.createFile(sslKeyFilePath);
+        sslCertificateFile = createFile(sslCertificateFilePath);
+        sslKeyFile = createFile(sslKeyFilePath);
     }
 
-    public SslSimpleBuilder protocols(String[] protocols) {
-        this.protocols = protocols;
+    public SslSimpleBuilder setProtocols(String[] protocols) {
+        protocols = protocols;
         return this;
     }
 
-    public SslContext build() throws SSLException {
-        SslContextBuilder sslBuilder = SslContextBuilder.forServer(this.sslCertificateFile, this.sslKeyFile, null);
-        //sslBuilder.ciphers(Arrays.asList(DEFAULT_CIPHERS));
-        SslContext context = sslBuilder.build();
-
-        logger.debug(context.cipherSuites());
-        SslHandler handler = context.build();
-
-
-        return context;
-    }
-
-
-    private File createFile(String filepath) {
-        return new File(filepath);
+    public SslSimpleBuilder setCiphersSuite(String [] ciphersSuite) {
+        ciphers = ciphersSuite;
+        return this;
     }
 
     public SslSimpleBuilder setCertificateAuthorities(String[] certificateAuthorities) {
-        this.certificateAuthorities = certificateAuthorities;
+        certificateAuthorities = certificateAuthorities;
         return this;
     }
 
     public SslSimpleBuilder setVerifyMode(String verifyMode) {
-        this.verifyMode = verifyMode;
+        verifyMode = verifyMode;
         return this;
+    }
+
+    public File getSslKeyFile() {
+        return sslKeyFile;
+    }
+
+    public File getSslCertificateFile() {
+        return sslCertificateFile;
+    }
+
+    public SslHandler build(ByteBufAllocator bufferAllocator) throws SSLException {
+        SslContextBuilder builder = SslContextBuilder.forServer(sslCertificateFile, sslKeyFile, passPhrase);
+        logger.debug("Ciphers: " + String.join(",", ciphers));
+
+        builder.ciphers(Arrays.asList(ciphers));
+
+
+        SslContext context = builder.build();
+        SslHandler sslHandler = context.newHandler(bufferAllocator);
+
+        logger.debug("TLS: " +  String.join(",", protocols));
+        sslHandler.engine().setEnabledProtocols(protocols);
+
+        return sslHandler;
+    }
+
+    private File createFile(String filepath)
+    {
+        return new File(filepath);
+    }
+
+    public void setPassPhrase(String passPhrase) {
+        this.passPhrase = passPhrase;
     }
 }
