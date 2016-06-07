@@ -1,3 +1,5 @@
+package org.logstash.beats;
+
 import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.Before;
 import org.junit.Test;

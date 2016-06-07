@@ -1,3 +1,5 @@
+package org.logstash.beats;
+
 import org.junit.Test;
 import org.logstash.beats.Batch;
 import org.logstash.beats.Message;
