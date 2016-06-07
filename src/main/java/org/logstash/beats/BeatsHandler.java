@@ -42,7 +42,7 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
         Batch batch = (Batch) data;
         for(Message message : batch.getMessages()) {
             logger.debug("Sending a new message for the listener, sequence: " + message.getSequence());
-            this.messageListener.onNewMessage(message);
+            this.messageListener.onNewMessage(ctx, message);
 
             if(needAck(message)) {
                 ack(ctx, message);
@@ -54,6 +54,8 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        this.messageListener.onException(ctx);
+
         logger.error("Exception", cause);
         ctx.close();
     }

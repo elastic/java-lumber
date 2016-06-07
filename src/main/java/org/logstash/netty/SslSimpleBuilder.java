@@ -54,9 +54,10 @@ public class SslSimpleBuilder {
     private String verifyMode;
     private String passPhrase;
 
-    public SslSimpleBuilder(String sslCertificateFilePath, String sslKeyFilePath) {
+    public SslSimpleBuilder(String sslCertificateFilePath, String sslKeyFilePath, String pass) {
         sslCertificateFile = createFile(sslCertificateFilePath);
         sslKeyFile = createFile(sslKeyFilePath);
+        passPhrase = pass;
     }
 
     public SslSimpleBuilder setProtocols(String[] protocols) {
@@ -124,9 +125,5 @@ public class SslSimpleBuilder {
     private File createFile(String filepath)
     {
         return new File(filepath);
-    }
-
-    public void setPassPhrase(String passPhrase) {
-        this.passPhrase = passPhrase;
     }
 }

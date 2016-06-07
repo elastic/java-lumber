@@ -14,6 +14,7 @@ public class BeatsParserTest {
     private Batch batch;
     private Message message1;
     private Message message2;
+    private final int numberOfMessage = 20;
 
     @Before
     public void setup() {
@@ -27,12 +28,14 @@ public class BeatsParserTest {
         this.message1 = new Message(1, map1);
         this.batch.addMessage(this.message1);
 
-        Map map2 = new HashMap<String, String>();
-        map2.put("line", "Another world");
-        map2.put("from", "Little big Adventure");
+        for(int i = 0; i < numberOfMessage; i++) {
+            Map map2 = new HashMap<String, String>();
+            map2.put("line", "Another world");
+            map2.put("from", "Little big Adventure");
 
-        this.message2 = new Message(2, map2);
-        this.batch.addMessage(this.message2);
+            this.message2 = new Message(2, map2);
+            this.batch.addMessage(this.message2);
+        }
     }
 
     @Test
@@ -49,7 +52,6 @@ public class BeatsParserTest {
 
     @Test
     public void testCompressedEncodingDecodingJson() {
-
         EmbeddedChannel channel = new EmbeddedChannel(new CompressedBatchEncoder(), new BeatsParser());
         channel.writeOutbound(this.batch);
         channel.writeInbound(channel.readOutbound());

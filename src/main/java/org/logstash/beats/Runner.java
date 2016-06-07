@@ -1,9 +1,6 @@
 package org.logstash.beats;
 
-import io.netty.handler.ssl.SslContext;
-import io.netty.util.ResourceLeakDetector;
 import org.apache.log4j.Logger;
-import org.logstash.netty.PrivateKeyConverter;
 import org.logstash.netty.SslSimpleBuilder;
 
 
@@ -29,7 +26,7 @@ public class Runner {
             logger.debug("SSLCertificate: " + sslCertificate);
             logger.debug("SSLKey: " + sslKey);
 
-            SslSimpleBuilder sslBuilder = new SslSimpleBuilder(sslCertificate, sslKey)
+            SslSimpleBuilder sslBuilder = new SslSimpleBuilder(sslCertificate, sslKey, null)
                     .setProtocols(new String[] { "TLSv1.2" })
                     .setCertificateAuthorities(sslCertificate);
             server.enableSSL(sslBuilder);

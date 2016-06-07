@@ -23,10 +23,11 @@ public class BeatsHandlerTest {
         private boolean onNewConnectionCalled = false;
         private boolean onNewMessageCalled = false;
         private boolean onConnectionCloseCalled = false;
+        private boolean onExceptionCalled = false;
         private final List<Message> lastMessages = new ArrayList<Message>();
 
         @Override
-        public void onNewMessage(Message message) {
+        public void onNewMessage(ChannelHandlerContext ctx, Message message) {
             onNewMessageCalled = true;
             lastMessages.add(message);
         }
@@ -40,6 +41,9 @@ public class BeatsHandlerTest {
         public void onConnectionClose(ChannelHandlerContext ctx) {
             onConnectionCloseCalled = true;
         }
+
+        @Override
+        public void onException(ChannelHandlerContext ctx) { onExceptionCalled = true; }
 
         public boolean isOnNewConnectionCalled() {
             return onNewConnectionCalled;
@@ -55,6 +59,10 @@ public class BeatsHandlerTest {
 
         public List<Message> getLastMessages() {
             return lastMessages;
+        }
+
+        public boolean isOnExceptionCalled() {
+            return onExceptionCalled;
         }
     }
 
