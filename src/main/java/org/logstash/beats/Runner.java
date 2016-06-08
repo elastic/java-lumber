@@ -1,7 +1,10 @@
 package org.logstash.beats;
 
 import org.apache.log4j.Logger;
+import org.logstash.netty.PrivateKeyConverter;
 import org.logstash.netty.SslSimpleBuilder;
+
+import java.io.FileInputStream;
 
 
 public class Runner {
@@ -22,11 +25,15 @@ public class Runner {
 
             String sslCertificate = "/Users/ph/es/certificates/certificate.crt";
             String sslKey = "/Users/ph/es/certificates/certificate.pkcs8.key";
+            String noPkcs7SslKey = "/Users/ph/es/certificates/certificate.key";
+
+            PrivateKeyConverter converter = new PrivateKeyConverter(noPkcs7SslKey, null);
 
             logger.debug("SSLCertificate: " + sslCertificate);
             logger.debug("SSLKey: " + sslKey);
 
-            SslSimpleBuilder sslBuilder = new SslSimpleBuilder(sslCertificate, sslKey, null)
+//            SslSimpleBuilder sslBuilder = new SslSimpleBuilder(sslCertificate, sslKey, null)
+            SslSimpleBuilder sslBuilder = new SslSimpleBuilder(new FileInputStream(sslCertificate), converter.convert(), null)
                     .setProtocols(new String[] { "TLSv1.2" })
                     .setCertificateAuthorities(sslCertificate);
             server.enableSSL(sslBuilder);
