@@ -1,15 +1,15 @@
 package org.logstash.beats;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Message implements Comparable<Message> {
     private int sequence;
     private String identityStream;
     private Map data;
-    private Payload payload;
+    private Batch batch;
 
-    public Message(Payload payload, int sequence, Map map) {
-        setPayload(payload);
+    public Message(int sequence, Map map) {
         setSequence(sequence);
         setData(map);
     }
@@ -22,14 +22,6 @@ public class Message implements Comparable<Message> {
         this.sequence = sequence;
     }
 
-    public String getIdentityStream() {
-        return identityStream;
-    }
-
-    public void setIdentityStream(String identityStream) {
-        this.identityStream = identityStream;
-    }
-
     public Map getData() {
         return data;
     }
@@ -38,17 +30,35 @@ public class Message implements Comparable<Message> {
         this.data = data;
     }
 
-    public Payload getPayload() {
-        return payload;
-    }
-
-    public void setPayload(Payload payload) {
-        this.payload = payload;
-    }
-
     @Override
     public int compareTo(Message o) {
         return Integer.compare(this.getSequence(), o.getSequence());
     }
 
+    public Batch getBatch() {
+        return batch;
+    }
+
+    public void setBatch(Batch batch) {
+        this.batch = batch;
+    }
+
+    public String getIdentityStream() {
+        if(this.identityStream == null) {
+            Map beatsData = (HashMap<String, String>) this.getData().get("beat");
+
+            if(beatsData != null) {
+                String id = (String) beatsData.get("id");
+                String resourceId = (String) beatsData.get("resource_id");
+
+                if(id != null && resourceId != null) {
+                    this.identityStream = id + "-" + resourceId;
+                } else {
+                    this.identityStream = (String) beatsData.get("name") + "-" + (String) beatsData.get("source");
+                }
+            }
+        }
+
+        return this.identityStream;
+    }
 }

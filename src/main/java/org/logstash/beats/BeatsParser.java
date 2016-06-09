@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.InflaterInputStream;
@@ -19,9 +21,7 @@ import java.util.zip.InflaterInputStream;
 
 public class BeatsParser extends ByteToMessageDecoder {
     private static final int CHUNK_SIZE = 1024;
-
     private final static Logger logger = Logger.getLogger(Server.class.getName());
-    private final static ObjectMapper mapper = new ObjectMapper().registerModule(new AfterburnerModule());
 
     private Batch batch = new Batch();
 
@@ -33,23 +33,12 @@ public class BeatsParser extends ByteToMessageDecoder {
         READ_COMPRESSED_FRAME_HEADER,
         READ_COMPRESSED_FRAME,
         READ_JSON,
+        READ_DATA_FIELDS,
     }
 
     private States currentState = States.READ_HEADER;
     private long requiredBytes = 0;
-    private Payload payload = new Payload();
     private int sequence = 0;
-
-    public BeatsParser() {
-        super();
-        this.reset();
-    }
-
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        // Gather a bit of information to be used as part of the identity stream.
-       ///this.remoteAddress = ctx.channel().remoteAddress().toString();
-    }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -65,10 +54,10 @@ public class BeatsParser extends ByteToMessageDecoder {
 
                 if(Protocol.isVersion2(currentVersion)) {
                     logger.debug("Frame version 2 detected");
-                    payload.setProtocol(Protocol.VERSION_2);
+                    batch.setProtocol(Protocol.VERSION_2);
                 } else {
                     logger.debug("Frame version 1 detected");
-                    payload.setProtocol(Protocol.VERSION_1);
+                    batch.setProtocol(Protocol.VERSION_1);
                 }
 
                 transition(States.READ_FRAME_TYPE, 1);
@@ -92,25 +81,61 @@ public class BeatsParser extends ByteToMessageDecoder {
                         transition(States.READ_COMPRESSED_FRAME_HEADER, 4);
                         break;
                     }
+                    case Protocol.CODE_FRAME: {
+                        transition(States.READ_DATA_FIELDS, 8);
+                        break;
+                    }
                 }
                 break;
             }
             case READ_WINDOW_SIZE: {
                 logger.debug("Running: READ_WINDOW_SIZE");
-                long windowSize = in.readUnsignedInt();
-                payload.setWindowSize(windowSize);
+                this.batch.setWindowSize((int) in.readUnsignedInt());
 
-                // This is unlikely to happen but I have no
-                // way to known when a frame is actually completely done other than checking
-                // the windows and the sequence number, If the FSM read a new window and I have still
-                // events buffered I should send them down to the next handler.
-                if(!batch.isEmpty()) {
+                // This is unlikely to happen but I have no way to known when a frame is
+                // actually completely done other than checking the windows and the sequence number,
+                // If the FSM read a new window and I have still
+                // events buffered I should send the current batch down to the next handler.
+                if(!this.batch.isEmpty()) {
                     logger.warn("New window size received but the current batch was not complete, sending the current batch");
                     out.add(this.batch);
+                    this.batchComplete();
                 }
 
-                this.resetBatch();
                 transitionToReadHeader();
+                break;
+            }
+            case READ_DATA_FIELDS: {
+                // Lumberjack version 1 protocol, which use the Key:Value format.
+                logger.debug("Running: READ_DATA_FIELDS");
+                this.sequence = (int) in.readUnsignedInt();
+                int fieldsCount = (int) in.readUnsignedInt();
+                int count = 0;
+
+                Map dataMap = new HashMap<String, String>();
+
+                while(count < fieldsCount) {
+                    int fieldLength = (int) in.readUnsignedInt();
+                    String field = in.readBytes(fieldLength).toString(Charset.forName("UTF8"));
+
+                    int dataLength = (int) in.readUnsignedInt();
+                    String data = in.readBytes(dataLength).toString(Charset.forName("UTF8"));
+
+                    dataMap.put(field, data);
+
+                    count++;
+                }
+
+                Message message = new Message(sequence, dataMap);
+                this.batch.addMessage(message);
+
+                if(this.batch.size() == this.batch.getWindowSize()) {
+                    out.add(batch);
+                    this.batchComplete();
+                }
+
+                transitionToReadHeader();
+
                 break;
             }
             case READ_JSON_HEADER: {
@@ -161,13 +186,13 @@ public class BeatsParser extends ByteToMessageDecoder {
                 logger.debug("Running: READ_JSON");
 
                 ByteBuf buffer = in.readBytes((int) this.requiredBytes);
-                Message message = new Message(payload, sequence, (Map) mapper.readValue(buffer.array(), Object.class));
+                Message message = new Message(sequence, (Map) JsonUtils.mapper.readValue(buffer.array(), Object.class));
 
-                batch.addMessage(message);
+                this.batch.addMessage(message);
 
-                if(batch.size() == this.payload.getWindowSize()) {
-                    out.add(batch);
-                    this.resetBatch();
+                if(this.batch.size() == this.batch.getWindowSize()) {
+                    out.add(this.batch);
+                    this.batchComplete();
                 }
 
                 transitionToReadHeader();
@@ -180,7 +205,6 @@ public class BeatsParser extends ByteToMessageDecoder {
         if(in.readableBytes() >= this.requiredBytes) {
             return true;
         }
-
         return false;
     }
 
@@ -194,13 +218,8 @@ public class BeatsParser extends ByteToMessageDecoder {
         this.requiredBytes = need;
     }
 
-    public void reset() {
-        this.payload = new Payload();
+    public void batchComplete() {
         this.requiredBytes = 0;
-        transitionToReadHeader();
-    }
-
-    public void resetBatch() {
         this.sequence = 0;
         this.batch = new Batch();
     }

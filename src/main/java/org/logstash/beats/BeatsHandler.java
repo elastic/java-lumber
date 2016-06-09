@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.apache.log4j.Logger;
@@ -13,9 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @ChannelHandler.Sharable
 public class BeatsHandler extends ChannelInboundHandlerAdapter {
-    private AckingStrategy acking = AckingStrategy.get(Protocol.VERSION_2);
-    private static Logger logger = Logger.getLogger(Server.class.getName());
-    private AtomicBoolean processing = new AtomicBoolean(false);
+    private static Logger logger = Logger.getLogger(BeatsHandler.class.getName());
+    private final AtomicBoolean processing = new AtomicBoolean(false);
     private final IMessageListener messageListener;
     private ChannelHandlerContext ctx;
 
@@ -27,6 +25,12 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         this.ctx = ctx;
+        this.messageListener.onNewConnection(ctx);
+    }
+
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        this.messageListener.onConnectionClose(ctx);
     }
 
     @Override
@@ -37,8 +41,12 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
 
         Batch batch = (Batch) data;
         for(Message message : batch.getMessages()) {
-            this.messageListener.onNewMessage(message);
-            this.acking.ack(message, ctx);
+            logger.debug("Sending a new message for the listener, sequence: " + message.getSequence());
+            this.messageListener.onNewMessage(ctx, message);
+
+            if(needAck(message)) {
+                ack(ctx, message);
+            }
         }
 
         this.processing.compareAndSet(true, false);
@@ -46,7 +54,9 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+        this.messageListener.onException(ctx);
+
+        logger.error("Exception", cause);
         ctx.close();
     }
 
@@ -63,9 +73,28 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    private boolean needAck(Message message) {
+        if (message.getSequence() == message.getBatch().getWindowSize()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void ack(ChannelHandlerContext ctx, Message message) {
+        writeAck(ctx, message.getBatch().getProtocol(), message.getSequence());
+    }
+
+    public void writeAck(ChannelHandlerContext ctx, byte protocol, int sequence) {
+        ByteBuf buffer = ctx.alloc().buffer(6);
+        buffer.writeByte(protocol);
+        buffer.writeByte('A');
+        buffer.writeInt(sequence);
+        ctx.writeAndFlush(buffer);
+    }
+
     private void clientTimeout() {
         logger.debug("Client Timeout");
-
         this.ctx.close();
     }
 
@@ -73,8 +102,7 @@ public class BeatsHandler extends ChannelInboundHandlerAdapter {
         // If we are actually blocked on processing
         // we can send a keep alive.
         if(this.processing.get()) {
-            logger.debug("Sending KeepAlive");
-            this.acking.keepAlive(this.ctx);
+            writeAck(this.ctx, Protocol.VERSION_2, 0);
         }
     }
 }
